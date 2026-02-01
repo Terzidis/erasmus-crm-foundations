@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS / random system files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+docker-data/
+
+# Prisma
+prisma/dev.db
+
+# Security / garbage folders (αυτά που σου μπήκαν πριν)
+.browser_data_dir/
+.config/
+.local/
+.pki/
+.secrets/
+.user_env
+.bashrc
+.zshrc
+.profile
+.gitconfig
+.bash_logout
+
+# Coverage
+coverage/
+
+# Temp
+tmp/
+temp/
