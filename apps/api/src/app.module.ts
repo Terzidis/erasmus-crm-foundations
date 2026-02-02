@@ -15,20 +15,39 @@ import { Activity } from './entities/activity.entity';
 
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get('DB_HOST'),
-        port: Number(config.get('DB_PORT')),
-        username: config.get('DB_USERNAME'),
-        password: config.get('DB_PASSWORD'),
-        database: config.get('DB_NAME'),
+      useFactory: (config: ConfigService) => {
+        const url = config.get<string>('DATABASE_URL');
 
-        entities: [User, Company, Contact, Deal, Activity],
+        // Railway / production (DATABASE_URL)
+        if (url) {
+          return {
+            type: 'postgres' as const,
+            url,
+            entities: [User, Company, Contact, Deal, Activity],
+            synchronize: false,
 
-        synchronize: false,
+            // Railway Postgres often requires SSL
+            ssl: { rejectUnauthorized: false },
 
-        logging: true
-      }),
+            // keep logs on for now; later you can set to false in prod
+            logging: true,
+          };
+        }
+
+        // Local dev (DB_HOST/DB_...)
+        return {
+          type: 'postgres' as const,
+          host: config.get<string>('DB_HOST'),
+          port: Number(config.get<string>('DB_PORT') || 5432),
+          username: config.get<string>('DB_USERNAME'),
+          password: config.get<string>('DB_PASSWORD'),
+          database: config.get<string>('DB_NAME'),
+
+          entities: [User, Company, Contact, Deal, Activity],
+          synchronize: false,
+          logging: true,
+        };
+      },
     }),
   ],
   controllers: [AppController],
