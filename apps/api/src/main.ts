@@ -8,8 +8,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 
+  app.setGlobalPrefix('api');
+
   app.enableCors({
-    origin: config.get<string>('CORS_ORIGIN') || 'http://localhost:5173',
+    origin: (config.get<string>('CORS_ORIGIN') || 'http://localhost:5173')
+      .split(',')
+      .map((s) => s.trim()),
     credentials: true,
   });
 
@@ -29,6 +33,8 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+
+  // ✅ IMPORTANT: with global prefix 'api', use 'docs' (NOT 'api/docs')
   SwaggerModule.setup('docs', app, document);
 
   const port = Number(config.get('PORT') || 3000);
