@@ -1,27 +1,26 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Activity } from './activity.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Tenant } from './tenant.entity';
+import { Role } from './role.entity';
 
-export enum UserRole {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-}
-
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @ManyToOne(() => Tenant, tenant => tenant.users)
+  tenant: Tenant;
+
+  @Column()
   email: string;
 
   @Column()
   passwordHash: string;
 
-  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
-  role: UserRole;
+  @ManyToOne(() => Role, role => role.users)
+  role: Role;
 
-  @OneToMany(() => Activity, (a) => a.user)
-  activities: Activity[];
+  @Column({ default: true })
+  isActive: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

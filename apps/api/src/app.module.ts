@@ -3,11 +3,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 
+import { Tenant } from './entities/tenant.entity';
 import { User } from './entities/user.entity';
-import { Company } from './entities/company.entity';
-import { Contact } from './entities/contact.entity';
-import { Deal } from './entities/deal.entity';
-import { Activity } from './entities/activity.entity';
+import { Role } from './entities/role.entity';
+import { Permission } from './entities/permission.entity';
+import { RolePermission } from './entities/role-permission.entity';
+import { Session } from './entities/session.entity';
+import { AuditLog } from './entities/audit-log.entity';
+
 
 @Module({
   imports: [
@@ -43,7 +46,7 @@ import { Activity } from './entities/activity.entity';
           password: config.get<string>('DB_PASSWORD'),
           database: config.get<string>('DB_NAME'),
 
-          entities: [User, Company, Contact, Deal, Activity],
+          entities: [Tenant,User,Role,Permission,RolePermission,Session,AuditLog],
           synchronize: false,
           logging: true,
         };
