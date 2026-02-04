@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
 
 import { Tenant } from './entities/tenant.entity';
 import { User } from './entities/user.entity';
@@ -11,7 +10,6 @@ import { RolePermission } from './entities/role-permission.entity';
 import { Session } from './entities/session.entity';
 import { AuditLog } from './entities/audit-log.entity';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -19,40 +17,38 @@ import { AuditLog } from './entities/audit-log.entity';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const url = config.get<string>('DATABASE_URL');
+        const databaseUrl = config.get<string>('DATABASE_URL');
 
-        // Railway / production (DATABASE_URL)
-        if (url) {
-          return {
-            type: 'postgres' as const,
-            url,
-            entities: [User, Company, Contact, Deal, Activity],
-            synchronize: false,
-
-            // Railway Postgres often requires SSL
-            ssl: { rejectUnauthorized: false },
-
-            // keep logs on for now; later you can set to false in prod
-            logging: true,
-          };
-        }
-
-        // Local dev (DB_HOST/DB_...)
-        return {
-          type: 'postgres' as const,
-          host: config.get<string>('DB_HOST'),
-          port: Number(config.get<string>('DB_PORT') || 5432),
-          username: config.get<string>('DB_USERNAME'),
-          password: config.get<string>('DB_PASSWORD'),
-          database: config.get<string>('DB_NAME'),
-
-          entities: [Tenant,User,Role,Permission,RolePermission,Session,AuditLog],
-          synchronize: false,
-          logging: true,
-        };
+        return databaseUrl
+          ? {
+              type: 'postgres',
+              url: databaseUrl,
+              ssl: { rejectUnauthorized: false },
+              autoLoadEntities: true,
+              synchronize: false,
+            }
+          : {
+              type: 'postgres',
+              host: config.get('DB_HOST'),
+              port: Number(config.get('DB_PORT')),
+              username: config.get('DB_USERNAME'),
+              password: config.get('DB_PASSWORD'),
+              database: config.get('DB_NAME'),
+              autoLoadEntities: true,
+              synchronize: false,
+            };
       },
     }),
+
+    TypeOrmModule.forFeature([
+      Tenant,
+      User,
+      Role,
+      Permission,
+      RolePermission,
+      Session,
+      AuditLog,
+    ]),
   ],
-  controllers: [AppController],
 })
 export class AppModule {}
