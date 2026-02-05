@@ -25,7 +25,29 @@ Create a stable, secure, and extensible CRM foundation that supports:
 ## High-level Architecture
 ```mermaid
 flowchart LR
-  U[User Browser] --> FE[Frontend (Vercel)]
-  FE -->|HTTPS REST + JWT| API[Backend API (Railway)]
-  API --> DB[(PostgreSQL - Railway)]
-  API --> AL[(audit_logs)]
+  U["User Browser"]
+  FE["Frontend - Vercel"]
+  API["Backend API - Railway"]
+  DB["PostgreSQL Database"]
+  AL["Audit Logs"]
+
+  U --> FE
+  FE --> API
+  API --> DB
+  API --> AL
+  
+---
+
+### Multi-tenant flow
+```mermaid
+flowchart TB
+  FE["Frontend"]
+  API["API"]
+  TC["Tenant Context"]
+  S["Services"]
+  DB["PostgreSQL"]
+
+  FE --> API
+  API --> TC
+  TC --> S
+  S --> DB
