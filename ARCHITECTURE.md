@@ -12,14 +12,13 @@ Create a stable, secure, and extensible CRM foundation that supports:
 ---
 
 ## Technology Stack
-
-- **Frontend:** React (Vite) deployed on Vercel
-- **Backend:** NestJS (TypeScript) REST API deployed on Railway
-- **Database:** PostgreSQL deployed on Railway
-- **ORM:** TypeORM with migrations
-- **Authentication:** JWT access tokens + refresh tokens, bcrypt
-- **Authorization:** RBAC (roles + permissions)
-- **API Documentation:** Swagger / OpenAPI at `/api/docs`
+- Frontend: React (Vite) on Vercel
+- Backend: NestJS (TypeScript) on Railway
+- Database: PostgreSQL on Railway
+- ORM: TypeORM with migrations
+- Auth: JWT access + refresh tokens, bcrypt
+- Authorization: RBAC (roles + permissions)
+- API Docs: Swagger at /api/docs
 
 ---
 
@@ -27,29 +26,29 @@ Create a stable, secure, and extensible CRM foundation that supports:
 
 ```mermaid
 flowchart LR
-  U["User Browser"]
-  FE["Frontend (Vercel)"]
-  API["Backend API (Railway)"]
-  DB["PostgreSQL Database"]
-  AL["Audit Logs"]
+  U["User Browser"] --> FE["Frontend (Vercel)"]
+  FE --> API["Backend API (Railway)"]
+  API --> DB["PostgreSQL Database"]
+  API --> AL["Audit Logs"]
+```
 
-  U --> FE
-  FE --> API
-  API --> DB
-  API --> AL
+---
 
+## Multi-tenant Architecture
+
+```mermaid
 flowchart TB
-  FE["Frontend"]
-  API["API Layer"]
-  CTX["Tenant Context (tenant_id from JWT)"]
-  SVC["Services & Repositories"]
-  DB["PostgreSQL"]
+  FE["Frontend"] --> API["API Layer"]
+  API --> CTX["Tenant Context (tenant_id from JWT)"]
+  CTX --> SVC["Services & Repositories"]
+  SVC --> DB["PostgreSQL"]
+```
 
-  FE --> API
-  API --> CTX
-  CTX --> SVC
-  SVC --> DB
+---
 
+## Authentication Flow
+
+```mermaid
 sequenceDiagram
   participant U as User
   participant FE as Frontend
@@ -63,6 +62,35 @@ sequenceDiagram
   FE->>API: GET /auth/me (Bearer token)
   API-->>FE: Current user info
   FE->>API: POST /auth/refresh
+  API->>DB: Validate session
   API-->>FE: New access token
   FE->>API: POST /auth/logout
   API->>DB: Revoke session
+  API-->>FE: 204
+```
+
+---
+
+## Architectural Decisions
+- NestJS chosen for modular structure and long-term scalability.
+- PostgreSQL schema supports multi-tenancy via tenant_id on tenant-scoped tables.
+- Migrations used in production (synchronize disabled).
+- Passwords stored as bcrypt hashes.
+- Refresh tokens tracked in sessions table (hashed + revocable).
+- RBAC enforced via roles + permissions mapping.
+- Audit logs for traceability of sensitive actions.
+
+---
+
+## Deployment Overview
+- Frontend: Vercel
+- Backend: Railway
+- Database: Railway PostgreSQL
+- TLS/HTTPS: platform-managed
+- Environment variables: platform secrets
+
+---
+
+## Phase 1 Scope
+Phase 1 focuses on the foundation (DB schema, auth model, RBAC model, documentation).
+UI/UX and business-specific features are developed in later phases.
