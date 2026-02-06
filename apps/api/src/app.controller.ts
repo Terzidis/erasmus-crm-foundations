@@ -2,8 +2,17 @@ import { Controller, Get } from '@nestjs/common';
 
 @Controller()
 export class AppController {
-  @Get('/health')
+  @Get('health')
   health() {
-    return { ok: true };
+    return { status: 'ok' };
+  }
+
+  @Get('info')
+  info() {
+    return {
+      name: 'Erasmus CRM API',
+      phase: 'Phase 1',
+      status: 'running',
+    };
   }
 }

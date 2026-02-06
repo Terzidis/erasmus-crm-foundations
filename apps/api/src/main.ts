@@ -8,12 +8,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
 
+  // Global prefix: /api
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: (config.get<string>('CORS_ORIGIN') || 'http://localhost:5173')
-      .split(',')
-      .map((s) => s.trim()),
+    origin: config.get<string>('CORS_ORIGIN') || 'http://localhost:5173',
     credentials: true,
   });
 
@@ -25,6 +24,7 @@ async function bootstrap() {
     }),
   );
 
+  // Swagger should be available at: /api/docs
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Erasmus CRM API')
     .setDescription('Foundation API for CRM')
@@ -33,11 +33,14 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-
-  // ✅ IMPORTANT: with global prefix 'api', use 'docs' (NOT 'api/docs')
   SwaggerModule.setup('docs', app, document);
 
   const port = Number(config.get('PORT') || 3000);
   await app.listen(port);
+
+  console.log(`Health:  http://localhost:${port}/api/health`);
+  console.log(`Info:    http://localhost:${port}/api/info`);
+  console.log(`Swagger: http://localhost:${port}/docs`);
 }
+
 bootstrap();
