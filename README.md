@@ -1,133 +1,156 @@
-# Erasmus CRM Foundation (Phase 1)
+# Erasmus CRM Foundation
 
-This repository provides the **foundation layer** for the Erasmus CRM system.
-Phase 1 focuses on architecture, database schema, authentication model, RBAC,
-and API skeletons — not full business logic or final UI.
+This repository provides the **foundation of the Erasmus CRM system**.
+Phase 1 focuses on backend architecture, authentication, RBAC, multi-tenancy,
+database schema, and documentation.
 
 ---
 
 ## Tech Stack
 
-### Backend
+**Backend**
 - NestJS (TypeScript)
-- TypeORM (migrations)
-- JWT authentication (access + refresh)
-- RBAC (roles + permissions)
-- Swagger / OpenAPI
-
-### Frontend
-- React
-- Vite
-
-### Database
+- TypeORM (migrations, no synchronize)
+- JWT authentication (access + refresh tokens)
+- RBAC (roles & permissions)
 - PostgreSQL
 
-### Tooling & Infra
-- Monorepo: pnpm workspace
-- Deployment:
-  - API + DB: Railway
-  - Frontend: Vercel
+**Frontend**
+- React + Vite (base skeleton)
+- Deployed on Vercel (Phase 2 expansion)
+
+**Infrastructure**
+- Railway (API + PostgreSQL)
+- Vercel (Frontend)
+- pnpm monorepo workspace
 
 ---
 
 ## Project Structure
 
+```text
 apps/
-├─ api/ → NestJS backend
-└─ web/ → React frontend
+ ├─ api/        # NestJS backend
+ └─ web/        # React frontend (base)
+Production URLs
+Backend API (Railway)
+Base URL
+👉 https://api-production-2bd8.up.railway.app
 
-yaml
-Αντιγραφή κώδικα
+Health Check
+👉 https://api-production-2bd8.up.railway.app/api/health
 
----
+Application Info
+👉 https://api-production-2bd8.up.railway.app/api/info
 
-## Core Domain (Phase 1)
+Swagger / OpenAPI Docs
+👉 https://api-production-2bd8.up.railway.app/docs
 
-- Tenant
-- User
-- Role
-- Permission
-- Session
-- AuditLog
+Features (Phase 1)
+Architecture
+Multi-tenant architecture (row-level isolation via tenant_id)
 
-> Business entities (Companies, Deals, etc.) are added in later phases.
+Modular NestJS structure
 
----
+Production-safe configuration (no auto-sync)
 
-## Local Development
+Authentication & Security
+User registration
 
-### Requirements
-- Node.js (LTS)
-- pnpm
-- PostgreSQL
-- pgAdmin (optional)
+JWT login
 
----
+Refresh tokens with session tracking
 
-### Install Dependencies
-From project root:
+Logout / token revocation
 
-```bash
+Password hashing with bcrypt
+
+Role-Based Access Control (RBAC)
+
+Permission validation
+
+Audit logging
+
+Database
+PostgreSQL
+
+Fully migrated schema (TypeORM migrations)
+
+Indexed tenant-scoped tables
+
+Referential integrity
+
+Ready for RLS hardening (optional)
+
+API
+REST API
+
+Swagger documentation
+
+Validation pipes
+
+Error handling
+
+Health & info endpoints
+
+Implemented API Modules (Skeleton)
+Auth
+
+Tenants
+
+Users
+
+Roles
+
+Permissions
+
+Audit Logs
+
+All endpoints are visible and testable via Swagger.
+
+Local Development
+Requirements
+Node.js (LTS)
+
+pnpm
+
+PostgreSQL
+
+Install
+
 pnpm install
-Run Backend (API)
+Run API
 bash
-Αντιγραφή κώδικα
-cd apps/api
-pnpm start:dev
-API runs at:
 
-http://localhost:3000/api
+pnpm --filter api start:dev
+API runs on:
 
+http://localhost:3000
 Swagger:
 
+
 http://localhost:3000/docs
-
-Health:
-
-http://localhost:3000/api/health
-
-Run Frontend (Web)
-bash
-Αντιγραφή κώδικα
-cd apps/web
-pnpm dev
-Frontend:
-
-http://localhost:5173
-
-Environment Variables (API)
-Example (apps/api/.env):
-
-env
-Αντιγραφή κώδικα
-DATABASE_URL=postgresql://...
-
-JWT_ACCESS_SECRET=change_me
-JWT_REFRESH_SECRET=change_me
-
-JWT_ACCESS_TTL=900
-JWT_REFRESH_TTL=604800
-
-CORS_ORIGIN=http://localhost:5173
-PORT=3000
 Documentation
-ARCHITECTURE.md – system architecture & decisions
+ARCHITECTURE.md – system architecture & design
 
 DATABASE.md – database schema & ER diagram
 
-API.md – REST endpoints overview (Swagger is source of truth)
+API.md – API endpoints
+
+.env.example – environment variables template
 
 Phase 1 Scope
 Phase 1 delivers:
 
-Architecture & design
+Stable backend foundation
 
-Database schema + migrations
+Secure authentication model
 
-Authentication & RBAC model
+RBAC authorization
 
-API skeleton endpoints
+Multi-tenant database schema
 
-Documentation
+Full technical documentation
 
-UI/UX and business-specific workflows are implemented in later phases.
+Business logic, advanced UI/UX, and CRM workflows
+are implemented in later phases.
