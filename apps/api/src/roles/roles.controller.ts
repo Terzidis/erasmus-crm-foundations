@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesService } from './roles.service';
 
@@ -9,6 +18,8 @@ import { RolesService } from './roles.service';
 @Controller('roles')
 export class RolesController {
   constructor(private readonly roles: RolesService) {}
+
+  // -------- Roles --------
 
   @Get()
   @ApiOperation({ summary: 'List roles - skeleton' })
@@ -26,5 +37,31 @@ export class RolesController {
   @ApiOperation({ summary: 'Get role by id - skeleton' })
   get(@Param('id') id: string) {
     return this.roles.get(id);
+  }
+
+  // -------- Role Permissions (role_permissions) --------
+
+  @Get(':id/permissions')
+  @ApiOperation({ summary: 'List role permissions - skeleton' })
+  listPermissions(@Param('id') id: string) {
+    return this.roles.listPermissions(id);
+  }
+
+  @Post(':id/permissions')
+  @ApiOperation({ summary: 'Assign permission to role - skeleton' })
+  assignPermission(
+    @Param('id') id: string,
+    @Body() body: { permissionId: string },
+  ) {
+    return this.roles.assignPermission(id, body.permissionId);
+  }
+
+  @Delete(':id/permissions/:permissionId')
+  @ApiOperation({ summary: 'Remove permission from role - skeleton' })
+  removePermission(
+    @Param('id') id: string,
+    @Param('permissionId') permissionId: string,
+  ) {
+    return this.roles.removePermission(id, permissionId);
   }
 }

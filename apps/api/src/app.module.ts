@@ -3,24 +3,25 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
+
+// Core modules
 import { AuthModule } from './auth/auth.module';
 
-import { Tenant } from './entities/tenant.entity';
-import { User } from './entities/user.entity';
-import { Role } from './entities/role.entity';
-import { Permission } from './entities/permission.entity';
-import { RolePermission } from './entities/role-permission.entity';
-import { Session } from './entities/session.entity';
-import { AuditLog } from './entities/audit-log.entity';
-
+// Feature modules
 import { TenantsModule } from './tenants/tenants.module';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { AuditLogsModule } from './audit-logs/audit-logs.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    // Global env config
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
 
+    // Database
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -47,20 +48,13 @@ import { RolesModule } from './roles/roles.module';
       },
     }),
 
-    TypeOrmModule.forFeature([
-      Tenant,
-      User,
-      Role,
-      Permission,
-      RolePermission,
-      Session,
-      AuditLog,
-    ]),
-
+    // App modules
     AuthModule,
     TenantsModule,
     UsersModule,
     RolesModule,
+    PermissionsModule,
+    AuditLogsModule,
   ],
   controllers: [AppController],
 })
